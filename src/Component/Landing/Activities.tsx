@@ -79,7 +79,7 @@ const activities = [
 export default function DesertSafariActivities() {
   const title = useTranslations("home");
   return (
-    <div className="max-w-7xl mx-auto mb-5 font-nunito">
+    <div className="max-w-7xl px-5 mx-auto mb-5 font-nunito">
       <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-8 md:mb-12 text-foreground">
        {title("activitiesTitle")}
       </h1>
