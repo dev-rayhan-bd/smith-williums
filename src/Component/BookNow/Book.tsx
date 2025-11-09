@@ -350,7 +350,7 @@ export default function Book({ data }: BookProps) {
           <div className="font-semibold text-right">Line Total</div>
         </div>
 
-        <div className="space-y-3 mt-3">
+        {/* <div className="space-y-3 mt-3">
           {fields.map((field, idx) => {
             const opt = watchedOptions[idx];
             const qty = Math.max(1, Number(opt?.quantity ?? 1));
@@ -420,7 +420,70 @@ export default function Book({ data }: BookProps) {
               </div>
             );
           })}
+        </div> */}
+<div className="space-y-3 mt-3">
+  {fields.map((field, idx) => {
+    const opt = watchedOptions[idx];
+    const qty = Math.max(1, Number(opt?.quantity ?? 1));
+    const perLineTotal = qty * (opt?.amount ?? 0);
+
+    const displayName = opt?.name ? opt.name.replace(/_/g, " ") : "";
+
+    return (
+      <div
+        key={field.id}
+        className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center py-2 border-b border-gray-100"
+      >
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            checked={!!opt?.selected}
+            onChange={() => toggleOption(idx)}
+            className="mr-2"
+          />
+          <div>
+            <div className="font-medium">{displayName}</div>
+            <div className="text-orange-500 text-xs">Package Details</div>
+         
+          </div>
         </div>
+
+        <div className="text-center">
+          <div className="flex items-center justify-center border border-gray-300 rounded w-28 mx-auto">
+            <button
+              type="button"
+              onClick={() => changeQty(idx, -1)}
+              className="p-1 hover:bg-gray-100"
+            >
+              <FaMinus className="text-xs" />
+            </button>
+            <span className="px-2 py-1 text-sm min-w-6 text-center">{qty}</span>
+            <button
+              type="button"
+              onClick={() => changeQty(idx, +1)}
+              className="p-1 hover:bg-gray-100"
+            >
+              <FaPlus className="text-xs" />
+            </button>
+          </div>
+             <div className="text-xs text-gray-500 mt-3">
+              Price per {displayName}:{" "}
+              {formatPrice(opt?.amount ?? 0, opt?.currency ?? formCurrency)}
+            </div>
+        </div>
+
+        <div className="text-right font-semibold">
+          {formatPrice(perLineTotal, opt?.currency ?? formCurrency)}
+          {!opt?.selected && (
+            <span className="block text-xs font-normal text-gray-500">
+              not included in totals
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  })}
+</div>
 
         {/* Totals */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6 py-4 bg-gray-50 rounded">
