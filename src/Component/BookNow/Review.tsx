@@ -2,10 +2,10 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { Empty, Rate, Avatar, Typography, Modal, List, Button, Tag, Divider } from 'antd';
+import { Empty, Rate, Avatar, Typography, Modal, List, Button, Tag, Divider,Grid } from 'antd';
 import { EyeOutlined, StarFilled } from '@ant-design/icons';
 import ReviewForm from './ReviewForm';
-
+const { useBreakpoint } = Grid;
 const { Paragraph, Text } = Typography;
 
 type ReviewItem = { user_name: string; rating: number; message: string; createdAt?: string };
@@ -30,9 +30,10 @@ export default function Review({ review, packageId }: { review?: ReviewItem[]; p
 
   const formatDate = (d?: string) =>
     d ? new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '';
-
+ const screens = useBreakpoint();
+  const isMobile = !screens.md;
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl px-5 mx-auto">
       {/* Top row: title + ALWAYS show 'View all' button */}
 
 
@@ -73,61 +74,83 @@ export default function Review({ review, packageId }: { review?: ReviewItem[]; p
       )}
 
       {/* Centered modal */}
-      <Modal
-        centered
-        open={open}
-        onCancel={() => setOpen(false)}
-        footer={null}
-        width={720}
-        styles={{ header: { padding: 0, borderBottom: 'none' }, body: { paddingTop: 0 } }}
-        title={
-          <div className="relative overflow-hidden rounded-t-xl">
-            <div className="bg-gradient-to-r from-orange-500 to-pink-500 p-5">
-              <div className="flex items-center justify-between">
-                <div className="text-white">
-                  <div className="text-sm opacity-90">Customer Reviews</div>
-                  <div className="text-2xl font-semibold flex items-center gap-2">
-                    <StarFilled /> {avg || '—'} <span className="text-base opacity-90">/ 5</span>
-                  </div>
-                </div>
-                <Tag color="gold" className="rounded-full bg-white/20 text-white border-white/30">
-                  {count} total
-                </Tag>
-              </div>
+<Modal
+  centered
+  open={open}
+  onCancel={() => setOpen(false)}
+  footer={null}
+  // modal takes full width but is constrained responsively with Tailwind
+  width="100%"
+  className="!max-w-[95vw] sm:!max-w-xl md:!max-w-2xl" // popup width
+  title={
+    <div className="relative overflow-hidden rounded-t-xl">
+      <div className="bg-gradient-to-r from-orange-500 to-pink-500 p-4 sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-white">
+            <div className="text-xs sm:text-sm opacity-90">Customer Reviews</div>
+            <div className="text-xl sm:text-2xl font-semibold flex items-center gap-2">
+              <StarFilled /> {avg ?? '—'}
+              <span className="text-sm sm:text-base opacity-90">/ 5</span>
             </div>
           </div>
-        }
-      >
-        <div className="-mt-3">
-          <Divider className="!my-4" />
-          {count ? (
-            <List
-              itemLayout="vertical"
-              dataSource={list}
-              renderItem={(r) => (
-                <List.Item>
-                  <div className="rounded-xl border border-gray-100 p-4 bg-white hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Avatar style={{ background: '#f59e0b' }}>{initials(r.user_name)}</Avatar>
-                      <div>
-                        <div className="font-medium">{r.user_name}</div>
-                        <div className="text-xs text-gray-500">{formatDate(r.createdAt)}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Rate allowHalf disabled defaultValue={r.rating} />
-                      <Text className="text-xs text-gray-500">{r.rating}/5</Text>
-                    </div>
-                    <Paragraph className="!mb-0 text-gray-700">{r.message}</Paragraph>
-                  </div>
-                </List.Item>
-              )}
-            />
-          ) : (
-            <Empty description="No reviews yet" />
-          )}
+          <Tag
+            color="gold"
+            className="rounded-full bg-white/20 text-white border-white/30 text-xs sm:text-sm self-start sm:self-auto"
+          >
+            {count} total
+          </Tag>
         </div>
-      </Modal>
+      </div>
+    </div>
+  }
+>
+  {/* body wrapper: padding + scroll + responsive spacing */}
+  <div className="-mt-3 max-h-[80vh] overflow-y-auto px-4 sm:px-6">
+    <Divider className="!my-4" />
+
+    {count ? (
+      <List
+        itemLayout="vertical"
+        dataSource={list}
+        renderItem={(r) => (
+          <List.Item>
+            <div className="rounded-xl border border-gray-100 p-3 sm:p-4 bg-white hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 mb-2">
+                <Avatar style={{ background: '#f59e0b' }}>
+                  {initials(r.user_name)}
+                </Avatar>
+                <div>
+                  <div className="font-medium text-sm sm:text-base">
+                    {r.user_name}
+                  </div>
+                  <div className="text-[11px] sm:text-xs text-gray-500">
+                    {formatDate(r.createdAt)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <Rate allowHalf disabled defaultValue={r.rating} />
+                <Text className="text-[11px] sm:text-xs text-gray-500">
+                  {r.rating}/5
+                </Text>
+              </div>
+
+              <Paragraph className="!mb-0 text-xs sm:text-sm text-gray-700">
+                {r.message}
+              </Paragraph>
+            </div>
+          </List.Item>
+        )}
+      />
+    ) : (
+      <div className="py-6">
+        <Empty description="No reviews yet" />
+      </div>
+    )}
+  </div>
+</Modal>
+
     </div>
   );
 }
