@@ -65,7 +65,7 @@ useEffect(() => {
 }, []);
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl px-5 mx-auto">
       {/* Pricing */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-2">Pricing</h3>
